@@ -35,7 +35,7 @@ import java.util.Map;
  */
 public class JsonExporter {
 
-    private static final String EXPORT_DIR = "WhosWho";
+    private static final String EXPORT_DIR = Environment.DIRECTORY_DOWNLOADS;
     private static final int PHOTO_QUALITY = 80;
 
     // -------------------------------------------------------------------------

@@ -30,7 +30,7 @@ public class EventDetailFragment extends Fragment {
 
     public static final String ARG_EVENT_ID = "event_id";
 
-    private static final int MIN_PEOPLE_FOR_TRAINING = 5;
+    private static final int MIN_PEOPLE_FOR_TRAINING = 4;
 
     /** Implemented by the host activity. */
     public interface OnDetailActionListener {

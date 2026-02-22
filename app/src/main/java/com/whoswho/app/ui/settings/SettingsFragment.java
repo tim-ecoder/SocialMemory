@@ -164,9 +164,9 @@ public class SettingsFragment extends Fragment {
     private List<File> findJsonFiles() {
         List<File> results = new ArrayList<>();
 
-        // Check external WhosWho directory
-        File extDir = new File(Environment.getExternalStorageDirectory(), "WhosWho");
-        addJsonFiles(extDir, results);
+        // Check Downloads directory
+        File downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+        addJsonFiles(downloadsDir, results);
 
         // Check app-specific external dir
         File appExtDir = getActivity().getExternalFilesDir(null);
