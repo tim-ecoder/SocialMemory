@@ -5,25 +5,71 @@
 **Приложение:** Тренажёр для запоминания людей перед мероприятиями
 **Платформа:** Android 8.1+ (API 27), только Java
 **Хранение:** SQLite (локальная БД, без сервера)
-**UI:** Material Design 3 (нативные Android-компоненты)
+**UI:** Material Design (google-material 1.2.1 + AndroidX)
 **Сборка:** aapt + javac + dx + zipalign + apksigner (Debian Android SDK)
 
 ---
 
-## Ограничения окружения сборки
+## Окружение сборки
 
-- `maven.google.com` и `dl.google.com` **недоступны** — невозможно скачать
-  AndroidX, Material Components library, Room, AppCompat
-- Доступен только `android.jar` API 23 (совместим с targetSdk 27)
-- Сборка через shell-скрипт `build.sh`, не через Gradle Android Plugin
+- `maven.google.com` **недоступен** — но AndroidX/Material доступны через
+  GitHub-репозитории **dandar3** (`raw.githubusercontent.com` — разрешён прокси)
+- Доступен `android.jar` API 23 + build-tools 29.0.3
+- Сборка через shell-скрипт `build.sh` (по аналогии с KeyoneKB `build_ci.sh`)
 
-**Следствия:**
-- UI строится на **нативных Android виджетах** (android.widget.*)
-  с кастомными drawable для Material-подобного вида
-- Вместо Room — **прямой SQLite** (SQLiteOpenHelper)
-- Вместо RecyclerView — **ListView** с кастомными адаптерами
-- Вместо Glide/Picasso — **BitmapFactory** + LruCache
-- JSON через **org.json** (встроен в Android SDK)
+### Источник зависимостей
+
+Все AndroidX и Material JAR-файлы скачиваются с:
+```
+https://raw.githubusercontent.com/dandar3/android-{name}/HEAD/libs/{name}.jar
+```
+
+### Зависимости (35 JAR-файлов)
+
+**Основные:**
+| Библиотека | Версия | Репозиторий dandar3 |
+|---|---|---|
+| google-material | 1.2.1 | android-google-material |
+| androidx-appcompat | 1.2.0 | android-androidx-appcompat |
+| androidx-recyclerview | 1.1.0 | android-androidx-recyclerview |
+| androidx-cardview | 1.0.0 | android-androidx-cardview |
+| androidx-core | 1.8.0 | android-androidx-core |
+| androidx-fragment | 1.3.1 | android-androidx-fragment |
+| androidx-coordinatorlayout | — | android-androidx-coordinatorlayout |
+| androidx-viewpager2 | — | android-androidx-viewpager2 |
+| androidx-transition | — | android-androidx-transition |
+| gson | 2.10.1 | Maven Central (repo1.maven.org) |
+
+**Транзитивные (AndroidX):**
+androidx-activity, androidx-annotation, androidx-annotation-experimental,
+androidx-appcompat-resources, androidx-arch-core-common, androidx-arch-core-runtime,
+androidx-collection, androidx-concurrent-futures, androidx-cursoradapter,
+androidx-customview, androidx-drawerlayout, androidx-interpolator,
+androidx-lifecycle-common, androidx-lifecycle-livedata, androidx-lifecycle-livedata-core,
+androidx-lifecycle-runtime, androidx-lifecycle-viewmodel, androidx-lifecycle-viewmodel-savedstate,
+androidx-loader, androidx-savedstate, androidx-tracing,
+androidx-vectordrawable, androidx-vectordrawable-animated, androidx-versionedparcelable,
+androidx-viewpager, google-guava-listenablefuture
+
+---
+
+## Доступные компоненты Material Design
+
+Благодаря `google-material:1.2.1` мы можем использовать:
+- **MaterialButton**, **MaterialCardView**, **MaterialToolbar**
+- **FloatingActionButton** (настоящий FAB)
+- **TextInputLayout** + **TextInputEditText** (Material text fields)
+- **TabLayout**, **BottomNavigationView**
+- **Snackbar**, **MaterialAlertDialogBuilder**
+- **ChipGroup** + **Chip** (для тегов: увлечения, интересы)
+- **LinearProgressIndicator**, **CircularProgressIndicator**
+- **MaterialColors** — цветовая система
+
+Благодаря `androidx-recyclerview:1.1.0`:
+- **RecyclerView** + **LinearLayoutManager** / **GridLayoutManager**
+
+Благодаря `androidx-fragment:1.3.1`:
+- **FragmentContainerView**, **FragmentTransaction** с анимациями
 
 ---
 
@@ -31,12 +77,12 @@
 
 ```
 com.whoswho.app/
-├── MainActivity.java              # Навигация между экранами (фрагменты)
+├── MainActivity.java              # AppCompatActivity + FragmentContainerView
 ├── db/
 │   ├── DatabaseHelper.java        # SQLiteOpenHelper — схема + миграции
 │   ├── PersonDao.java             # CRUD для людей
 │   ├── EventDao.java              # CRUD для событий
-│   └── QuizStatsDao.java          # Статистика ошибок для адаптивной тренировки
+│   └── QuizStatsDao.java          # Статистика для адаптивной тренировки
 ├── model/
 │   ├── Person.java                # Модель «Человек»
 │   ├── Event.java                 # Модель «Событие»
@@ -45,14 +91,14 @@ com.whoswho.app/
 │   ├── splash/
 │   │   └── SplashActivity.java    # Splash-экран
 │   ├── events/
-│   │   ├── EventListFragment.java # Список событий
-│   │   └── EventListAdapter.java
+│   │   ├── EventListFragment.java # RecyclerView + MaterialCardView
+│   │   └── EventAdapter.java      # RecyclerView.Adapter
 │   ├── event/
 │   │   ├── EventDetailFragment.java # Экран события + список людей
-│   │   └── EventPersonAdapter.java
+│   │   └── PersonAdapter.java       # RecyclerView.Adapter
 │   ├── person/
-│   │   ├── PersonEditFragment.java  # Добавление/редактирование человека
-│   │   └── PhotoHelper.java         # Камера / галерея + кроп
+│   │   ├── PersonEditFragment.java  # TextInputLayout поля
+│   │   └── PhotoHelper.java         # Камера / галерея
 │   ├── quiz/
 │   │   ├── QuizFragment.java        # Основной экран викторины
 │   │   ├── QuizEngine.java          # Логика вопросов + адаптивный алгоритм
@@ -62,10 +108,10 @@ com.whoswho.app/
 ├── util/
 │   ├── ImageCache.java            # LruCache для фото
 │   ├── ImageUtils.java            # Ресайз, кроп, сохранение в internal storage
-│   └── JsonExporter.java          # Экспорт/импорт JSON
+│   └── JsonExporter.java          # Экспорт/импорт JSON (Gson)
 └── res/
-    ├── layout/                    # XML-разметки всех экранов
-    ├── drawable/                  # Кастомные shape/ripple для Material-стиля
+    ├── layout/                    # XML-разметки с Material виджетами
+    ├── drawable/                  # Shape/ripple для Material-стиля
     ├── values/                    # Цвета, строки, стили, размеры
     └── anim/                      # Анимации переходов
 ```
@@ -126,231 +172,88 @@ com.whoswho.app/
 
 ## Пошаговый план реализации
 
-### Фаза 0 — Каркас проекта
-**Файлы:** AndroidManifest.xml, build.sh, базовая структура каталогов
+### Фаза 0 — Каркас проекта + скачивание зависимостей
 
 1. Создать полную структуру каталогов `com.whoswho.app`
-2. Создать AndroidManifest.xml (все Activity, permissions: CAMERA, READ/WRITE_EXTERNAL_STORAGE)
-3. Создать ресурсы темы: colors.xml, styles.xml (Material Design 3-подобная тема)
-4. Создать strings.xml (русский + английский)
-5. Обновить build.sh для нового package name
-6. Собрать пустой APK — проверить что собирается
+2. Написать `build.sh`:
+   - Скачивание всех 35 JAR-зависимостей (dandar3 + Maven Central)
+   - Компиляция Java → .class
+   - dx → classes.dex
+   - aapt → ресурсы → APK
+   - Подпись debug keystore
+3. Создать AndroidManifest.xml:
+   - Permissions: CAMERA, READ/WRITE_EXTERNAL_STORAGE
+   - SplashActivity (launcher), MainActivity
+   - Theme: Theme.MaterialComponents.Light.NoActionBar
+4. Создать ресурсы: colors.xml, styles.xml, strings.xml, dimens.xml
+5. Создать минимальную MainActivity (AppCompatActivity)
+6. Собрать APK — проверить что собирается с AndroidX
 
 ### Фаза 1 — База данных
-**Файлы:** db/*.java, model/*.java
-
-1. Реализовать `Person.java` — POJO со всеми полями из ТЗ
-2. Реализовать `Event.java` — POJO
-3. Реализовать `QuizResult.java` — POJO для результата
-4. Реализовать `DatabaseHelper.java`:
-   - onCreate — создание всех таблиц
-   - onUpgrade — миграции (пустые для v1)
-5. Реализовать `PersonDao.java`:
-   - insert, update, delete, getById, getAll
-   - getByEvent(eventId)
-   - поиск по имени
-6. Реализовать `EventDao.java`:
-   - insert, update, delete, getById, getAll
-   - addPerson(eventId, personId)
-   - removePerson(eventId, personId)
-   - getPersonCount(eventId)
-7. Реализовать `QuizStatsDao.java`:
-   - getStatsForEvent(eventId)
-   - updateWeight(personId, eventId, correct)
-   - resetStats(eventId)
-8. Собрать APK — проверить инициализацию БД
+1. Person.java, Event.java, QuizResult.java (POJO)
+2. DatabaseHelper.java (SQLiteOpenHelper, все таблицы)
+3. PersonDao.java (CRUD + getByEvent + поиск)
+4. EventDao.java (CRUD + управление связями event_persons)
+5. QuizStatsDao.java (статистика + обновление весов)
+6. Собрать APK — проверить инициализацию БД
 
 ### Фаза 2 — Экран списка событий
-**Файлы:** ui/events/*.java, res/layout/fragment_event_list.xml, item_event.xml
-
-1. Создать `MainActivity.java` — контейнер для фрагментов
-2. Создать `EventListFragment.java`:
-   - ListView с кастомным адаптером
-   - FAB «Создать событие»
-   - Диалог создания события (название, дата, описание)
-   - Длинное нажатие → удаление
-   - Нажатие → переход к событию
-3. Создать `EventListAdapter.java`:
-   - Название, дата, кол-во людей
-   - Material-подобные карточки (bg_card drawable)
-4. Создать drawable: карточки, кнопки, FAB, ripple-эффекты
-5. Собрать APK — проверить CRUD событий
+1. MainActivity с FragmentContainerView + Toolbar
+2. EventListFragment: RecyclerView + FAB
+3. EventAdapter: MaterialCardView (название, дата, кол-во людей)
+4. Диалог создания/редактирования события (MaterialAlertDialog + TextInputLayout)
+5. Собрать APK
 
 ### Фаза 3 — Экран события + управление людьми
-**Файлы:** ui/event/*.java, res/layout/fragment_event_detail.xml, item_person.xml
-
-1. Создать `EventDetailFragment.java`:
-   - Заголовок события (название, дата)
-   - Список людей события (ListView с фото-миниатюрами)
-   - Кнопка «Добавить человека»
-   - Кнопка «Начать тренировку» (активна при >= 5 людей)
-   - Удаление человека из события (свайп или long press)
-2. Создать `EventPersonAdapter.java`:
-   - Круглое фото, имя, компания
-   - Быстрый просмотр карточки
-3. Собрать APK — проверить управление людьми в событии
+1. EventDetailFragment: заголовок + RecyclerView людей + FAB
+2. PersonAdapter: круглое фото, имя, компания
+3. Кнопка «Начать тренировку» (MaterialButton, активна >= 5 людей)
+4. Собрать APK
 
 ### Фаза 4 — Добавление/редактирование человека
-**Файлы:** ui/person/*.java, res/layout/fragment_person_edit.xml
-
-1. Создать `PersonEditFragment.java`:
-   - Фото (нажатие → камера или галерея через Intent)
-   - Основные поля: имя, фамилия, компания, должность, контекст
-   - Разворачиваемая секция «Дополнительно»:
-     увлечения, интересы, семейный статус, партнёр, дети, животные,
-     вероисповедание, политические взгляды
-   - Кнопка «Сохранить»
-   - Валидация: имя + фото обязательны
-2. Создать `PhotoHelper.java`:
-   - Intent для камеры (MediaStore.ACTION_IMAGE_CAPTURE)
-   - Intent для галереи (ACTION_PICK)
-   - Ресайз фото до 800x800 max
-   - Сохранение в internal storage (getFilesDir)
-   - Обновление фото без пересоздания записи
-3. Создать `ImageUtils.java`:
-   - decodeScaledBitmap — загрузка с ресайзом
-   - getRoundedBitmap — круглая миниатюра
-   - saveBitmap — сохранение в файл
-4. Создать `ImageCache.java`:
-   - LruCache<String, Bitmap> — кэш в памяти
-   - get/put по пути к файлу
-5. Собрать APK — проверить добавление человека с фото
+1. PersonEditFragment: TextInputLayout для всех полей
+2. Фото: камера/галерея Intent, ресайз, сохранение в internal storage
+3. Секция «Дополнительно» (expandable) — ChipGroup для тегов
+4. ImageUtils + ImageCache (LruCache)
+5. Собрать APK
 
 ### Фаза 5 — Викторина (5 режимов)
-**Файлы:** ui/quiz/*.java, res/layout/fragment_quiz.xml, fragment_quiz_result.xml
+1. QuizEngine: генерация вопросов, дистракторы, адаптивный алгоритм
+2. QuizFragment: 5 режимов UI (фото→имя, описание→фото, имя→должность, факт→фото, компания→фото)
+3. Анимации ответов (цветовая индикация), прогресс-бар
+4. QuizResultFragment: процент, список ошибок, повтор
+5. Собрать APK
 
-1. Создать `QuizEngine.java` — ядро логики:
-   - Генерация вопросов из людей события
-   - Случайный порядок
-   - 5 режимов:
-     - MODE_PHOTO_TO_NAME: фото → выбери имя (4 варианта)
-     - MODE_DESC_TO_PHOTO: описание → выбери фото (сетка 2x2)
-     - MODE_NAME_TO_POSITION: имя → выбери должность (4 варианта)
-     - MODE_FACT_TO_PHOTO: факт → выбери фото (сетка 2x2)
-     - MODE_COMPANY_TO_PHOTO: компания → выбери фото (сетка 2x2)
-   - Генерация дистракторов (неправильных вариантов) из того же события
-   - Подсчёт правильных/неправильных
-   - Адаптивный алгоритм:
-     ```
-     weight = wrong_count / (correct_count + 1) + time_decay
-     probability(person) = weight(person) / sum(all_weights)
-     ```
-   - Микс режимов в одной сессии
+### Фаза 6 — Экспорт/импорт
+1. JsonExporter: Gson → JSON с Base64 фото
+2. ExportImportFragment: кнопки + диалоги подтверждения
+3. Собрать APK
 
-2. Создать `QuizFragment.java`:
-   - Режим «Фото → Имя»:
-     - Большое фото по центру
-     - 4 кнопки с именами
-   - Режим «Описание → Фото»:
-     - Текст описания сверху
-     - Сетка 2×2 из фото
-   - Режим «Имя → Должность»:
-     - Имя крупно сверху
-     - 4 кнопки с должностями
-   - Режим «Факт → Фото»:
-     - Факт (интерес/увлечение/контекст) сверху
-     - Сетка 2×2 из фото
-   - Режим «Компания → Фото»:
-     - Название компании сверху
-     - Сетка 2×2 из фото
-   - Анимация при ответе:
-     - Правильный → зелёная подсветка, delay 1 сек
-     - Неправильный → красная подсветка + показ правильного, delay 2 сек
-   - Прогресс-бар сверху (вопрос X из Y)
-   - После ответа: краткая карточка человека (имя, компания, контекст)
-
-3. Создать `QuizResultFragment.java`:
-   - Итоговый процент (большая цифра, анимация)
-   - Список: кого узнал / кого не узнал
-   - Кнопка «Повторить тренировку»
-   - Кнопка «Повторить ошибки» (только те, в ком ошибся)
-   - Кнопка «Назад к событию»
-
-4. Собрать APK — проверить все 5 режимов
-
-### Фаза 6 — Экспорт/импорт базы
-**Файлы:** util/JsonExporter.java, ui/settings/ExportImportFragment.java
-
-1. Создать `JsonExporter.java`:
-   - exportAll() → JSON-файл со всеми людьми + событиями + связями
-   - Фото → Base64 внутри JSON (или отдельные файлы в zip)
-   - importAll(file) → парсинг JSON, вставка в БД
-   - Валидация формата при импорте
-2. Создать `ExportImportFragment.java`:
-   - Кнопка «Экспорт» → подтверждение → сохранение через Intent (ACTION_CREATE_DOCUMENT)
-   - Кнопка «Импорт» → подтверждение → предупреждение о перезаписи → выбор файла
-   - Share через Intent (ACTION_SEND)
-3. Собрать APK — проверить экспорт/импорт
-
-### Фаза 7 — Splash + Онбординг
-**Файлы:** ui/splash/SplashActivity.java, res/layout/activity_splash.xml
-
-1. Создать `SplashActivity.java`:
-   - Логотип + название приложения
-   - Задержка 1.5 сек → переход к MainActivity
-   - Первый запуск → показать онбординг (3 слайда ViewFlipper)
-2. Собрать APK — проверить запуск
+### Фаза 7 — Splash + онбординг
+1. SplashActivity + ViewPager2 для онбординга
+2. Собрать APK
 
 ### Фаза 8 — Полировка UI
-1. Все drawable для Material Design 3-подобного вида:
-   - Rounded corners (16dp) на карточках
-   - Ripple-эффекты на всех кликабельных элементах
-   - Цветовая схема Material You (Primary: #6750A4, Secondary: #625B71, Tertiary: #7D5260)
-   - Elevation/shadow на карточках
-   - Градиенты на header-экранах
+1. Material Design цвета, ripple, elevation
 2. Анимации переходов между фрагментами
-3. Пустые состояния (empty state) — иконка + текст когда списки пустые
-4. Плавная загрузка фото (placeholder → fade-in)
-5. Одноручное управление: основные действия в нижней части экрана
+3. Empty states
+4. Одноручное управление
 
 ### Фаза 9 — Финальная сборка и тестирование
-1. Полный прогон всех сценариев из ТЗ (раздел 4)
-2. Тест на минимум 5 людей в событии
-3. Тест всех 5 режимов викторины
-4. Тест экспорта/импорта
-5. Тест офлайн-работы
-6. Финальная подписка APK
-7. Коммит и пуш
-
----
-
-## Оценка объёма (файлы)
-
-| Компонент | Файлов Java | Файлов XML |
-|-----------|-------------|------------|
-| Модели | 3 | — |
-| База данных | 4 | — |
-| UI: События | 3 | 3 |
-| UI: Событие/Люди | 3 | 3 |
-| UI: Редактор человека | 2 | 1 |
-| UI: Викторина | 3 | 3 |
-| UI: Настройки | 1 | 1 |
-| UI: Splash | 1 | 2 |
-| Утилиты | 3 | — |
-| MainActivity | 1 | 1 |
-| Ресурсы | — | ~15 |
-| **Итого** | **~24** | **~29** |
-
----
-
-## Порядок сборки каждой фазы
-
-```bash
-# После каждой фазы:
-bash build.sh
-# APK → socialmemory-debug.apk
-# Установка: adb install -r socialmemory-debug.apk
-```
+1. Прогон всех сценариев из ТЗ
+2. Финальная подпись APK
+3. Коммит и пуш
 
 ---
 
 ## Ключевые решения
 
-1. **Без AndroidX/Material library** — используем нативные виджеты +
-   кастомные drawable для Material-подобного вида
-2. **SQLite напрямую** — вместо Room, через SQLiteOpenHelper
-3. **ListView** — вместо RecyclerView (доступен в базовом SDK)
-4. **Fragment** — встроенный android.app.Fragment (не AndroidX)
-5. **Фото** — хранятся в internal storage, путь в БД
-6. **JSON экспорт** — через org.json (встроен в Android)
-7. **Адаптивная тренировка** — weight-based алгоритм в таблице quiz_stats
+1. **AndroidX + Material Design** через dandar3 GitHub JAR-файлы
+2. **AppCompatActivity** + **androidx.fragment** для навигации
+3. **RecyclerView** + **MaterialCardView** для списков
+4. **TextInputLayout** для полей ввода
+5. **FloatingActionButton** для основных действий
+6. **SQLite напрямую** через SQLiteOpenHelper (не Room)
+7. **Gson** для JSON экспорта/импорта
+8. **BitmapFactory + LruCache** для фото (без Glide/Picasso)
+9. **Сборка** по модели KeyoneKB build_ci.sh

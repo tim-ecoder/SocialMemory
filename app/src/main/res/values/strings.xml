@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Who\'s Who</string>
+
+    <!-- Events -->
+    <string name="events_title">Events</string>
+    <string name="create_event">Create Event</string>
+    <string name="edit_event">Edit Event</string>
+    <string name="delete_event">Delete Event</string>
+    <string name="event_name">Event name</string>
+    <string name="event_date">Date (optional)</string>
+    <string name="event_description">Description (optional)</string>
+    <string name="no_events">No events yet.\nTap + to create one.</string>
+    <string name="people_count">%d people</string>
+    <string name="delete_event_confirm">Delete \"%s\"?</string>
+
+    <!-- Event Detail -->
+    <string name="add_person">Add Person</string>
+    <string name="start_training">Start Training</string>
+    <string name="need_more_people">Add at least 5 people to start training</string>
+    <string name="no_people">No people added yet.\nTap + to add someone.</string>
+    <string name="remove_person">Remove from event</string>
+
+    <!-- Person Editor -->
+    <string name="new_person">New Person</string>
+    <string name="edit_person">Edit Person</string>
+    <string name="first_name">First name</string>
+    <string name="last_name">Last name (optional)</string>
+    <string name="company">Company</string>
+    <string name="job_position">Position</string>
+    <string name="acquaintance_context">How you met (up to 200 chars)</string>
+    <string name="note">Note</string>
+    <string name="additional_info">Additional info</string>
+    <string name="hobbies">Hobbies</string>
+    <string name="interests">Interests</string>
+    <string name="family_status">Family status</string>
+    <string name="partner_name">Partner name</string>
+    <string name="children_names">Children names</string>
+    <string name="pet_names">Pet names</string>
+    <string name="religion">Religion</string>
+    <string name="political_views">Political views</string>
+    <string name="save">Save</string>
+    <string name="take_photo">Take photo</string>
+    <string name="choose_from_gallery">Choose from gallery</string>
+    <string name="photo_required">Photo is required</string>
+    <string name="name_required">Name is required</string>
+    <string name="add_photo">Tap to add photo</string>
+
+    <!-- Quiz -->
+    <string name="quiz_title">Training</string>
+    <string name="who_is_this">Who is this?</string>
+    <string name="find_the_face">Find this person</string>
+    <string name="what_do_they_do">What does %s do?</string>
+    <string name="who_is_described">Who is described?</string>
+    <string name="who_works_at">Who works at %s?</string>
+    <string name="question_progress">%1$d / %2$d</string>
+
+    <!-- Quiz Result -->
+    <string name="result_title">Result</string>
+    <string name="result_score">%d%%</string>
+    <string name="result_correct">%1$d correct out of %2$d</string>
+    <string name="retry_all">Retry All</string>
+    <string name="retry_mistakes">Retry Mistakes</string>
+    <string name="back_to_event">Back to Event</string>
+    <string name="people_to_review">People to review:</string>
+
+    <!-- Export/Import -->
+    <string name="settings">Settings</string>
+    <string name="export_data">Export Data</string>
+    <string name="import_data">Import Data</string>
+    <string name="export_confirm">Export all people and events to a JSON file?</string>
+    <string name="import_confirm">Import will replace all existing data. Continue?</string>
+    <string name="export_success">Data exported successfully</string>
+    <string name="import_success">Data imported successfully</string>
+    <string name="export_error">Export failed</string>
+    <string name="import_error">Import failed</string>
+
+    <!-- General -->
+    <string name="cancel">Cancel</string>
+    <string name="delete">Delete</string>
+    <string name="ok">OK</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+</resources>

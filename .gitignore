@@ -10,3 +10,6 @@ local.properties
 # OS
 .DS_Store
 Thumbs.db
+build_ci/
+whoswho-debug.apk
+debug.keystore
