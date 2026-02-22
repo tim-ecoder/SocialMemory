@@ -1,0 +1,25 @@
+// Top-level build file for SocialMemory
+// Note: The Android Gradle Plugin requires maven.google.com which may not
+// be available in all environments. Use build.sh for manual APK builds
+// using the Debian Android SDK tools.
+
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:7.4.2'
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}

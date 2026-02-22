@@ -1,0 +1,12 @@
+# Build outputs (keep debug APK for testing)
+build-output/
+.gradle/
+local.properties
+
+# IDE
+.idea/
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db
