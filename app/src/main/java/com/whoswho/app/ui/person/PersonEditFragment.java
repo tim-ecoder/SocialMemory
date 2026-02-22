@@ -274,6 +274,28 @@ public class PersonEditFragment extends Fragment {
             return;
         }
 
+        String company = etCompany.getText().toString().trim();
+        if (TextUtils.isEmpty(company)) {
+            Toast.makeText(getActivity(), R.string.company_required, Toast.LENGTH_SHORT).show();
+            etCompany.requestFocus();
+            return;
+        }
+
+        String position = etPosition.getText().toString().trim();
+        if (TextUtils.isEmpty(position)) {
+            Toast.makeText(getActivity(), R.string.position_required, Toast.LENGTH_SHORT).show();
+            etPosition.requestFocus();
+            return;
+        }
+
+        String hobbies = etHobbies.getText().toString().trim();
+        String interests = etInterests.getText().toString().trim();
+        if (TextUtils.isEmpty(hobbies) && TextUtils.isEmpty(interests)) {
+            Toast.makeText(getActivity(), R.string.hobby_or_interest_required, Toast.LENGTH_SHORT).show();
+            etHobbies.requestFocus();
+            return;
+        }
+
         DatabaseHelper dbHelper = DatabaseHelper.getInstance(getActivity());
         PersonDao personDao = new PersonDao(dbHelper);
         EventDao  eventDao  = new EventDao(dbHelper);

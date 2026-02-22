@@ -18,22 +18,22 @@
     <!-- Event Detail -->
     <string name="add_person">Add Person</string>
     <string name="start_training">Start Training</string>
-    <string name="need_more_people">Add at least 5 people to start training</string>
+    <string name="need_more_people">Add at least 4 people to start training</string>
     <string name="no_people">No people added yet.\nTap + to add someone.</string>
     <string name="remove_person">Remove from event</string>
 
     <!-- Person Editor -->
     <string name="new_person">New Person</string>
     <string name="edit_person">Edit Person</string>
-    <string name="first_name">First name</string>
+    <string name="first_name">First name *</string>
     <string name="last_name">Last name (optional)</string>
-    <string name="company">Company</string>
-    <string name="job_position">Position</string>
+    <string name="company">Company *</string>
+    <string name="job_position">Position *</string>
     <string name="acquaintance_context">How you met (up to 200 chars)</string>
     <string name="note">Note</string>
     <string name="additional_info">Additional info</string>
-    <string name="hobbies">Hobbies</string>
-    <string name="interests">Interests</string>
+    <string name="hobbies">Hobbies *</string>
+    <string name="interests">Interests *</string>
     <string name="family_status">Family status</string>
     <string name="partner_name">Partner name</string>
     <string name="children_names">Children names</string>
@@ -45,7 +45,10 @@
     <string name="choose_from_gallery">Choose from gallery</string>
     <string name="photo_required">Photo is required</string>
     <string name="name_required">Name is required</string>
-    <string name="add_photo">Tap to add photo</string>
+    <string name="company_required">Company is required</string>
+    <string name="position_required">Position is required</string>
+    <string name="hobby_or_interest_required">Hobbies or interests required</string>
+    <string name="add_photo">Tap to add photo *</string>
 
     <!-- Quiz -->
     <string name="quiz_title">Training</string>
