@@ -27,6 +27,7 @@ public class EventListFragment extends Fragment {
     /** Host activity must implement this interface to receive navigation events. */
     public interface OnEventSelectedListener {
         void onEventSelected(long eventId);
+        void onOpenSettings();
     }
 
     private ListView mListView;
@@ -88,6 +89,16 @@ public class EventListFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 showEventDialog(null);
+            }
+        });
+
+        Button btnSettings = (Button) root.findViewById(R.id.btn_settings);
+        btnSettings.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mListener != null) {
+                    mListener.onOpenSettings();
+                }
             }
         });
 

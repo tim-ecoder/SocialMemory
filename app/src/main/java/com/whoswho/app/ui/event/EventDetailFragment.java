@@ -36,6 +36,7 @@ public class EventDetailFragment extends Fragment {
     public interface OnDetailActionListener {
         void onAddPersonToEvent(long eventId);
         void onStartQuiz(long eventId);
+        void onEditPerson(long eventId, long personId);
     }
 
     // Views
@@ -111,6 +112,17 @@ public class EventDetailFragment extends Fragment {
 
         mPersonAdapter = new PersonAdapter(getActivity());
         mListPeople.setAdapter(mPersonAdapter);
+
+        mListPeople.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view,
+                                    int position, long id) {
+                Person person = mPersonAdapter.getItem(position);
+                if (mListener != null) {
+                    mListener.onEditPerson(mEventId, person.getId());
+                }
+            }
+        });
 
         mListPeople.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
@@ -215,15 +227,9 @@ public class EventDetailFragment extends Fragment {
     private void showAddPersonDialog() {
         final List<Person> available = mPersonDao.getNotInEvent(mEventId);
 
-        if (available.isEmpty()) {
-            Toast.makeText(getActivity(),
-                    "No additional people available. Add people via the People tab.",
-                    Toast.LENGTH_LONG).show();
-            return;
-        }
-
-        // Build display names for the picker
-        final String[] names = new String[available.size()];
+        // First entry is always "Create new person"
+        final String[] names = new String[available.size() + 1];
+        names[0] = getString(R.string.new_person);
         for (int i = 0; i < available.size(); i++) {
             Person p = available.get(i);
             String name = p.getFullName();
@@ -231,7 +237,7 @@ public class EventDetailFragment extends Fragment {
             if (company != null && !company.isEmpty()) {
                 name = name + " (" + company + ")";
             }
-            names[i] = name;
+            names[i + 1] = name;
         }
 
         new AlertDialog.Builder(getActivity())
@@ -239,9 +245,16 @@ public class EventDetailFragment extends Fragment {
                 .setItems(names, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        Person chosen = available.get(which);
-                        mEventDao.addPerson(mEventId, chosen.getId());
-                        loadData();
+                        if (which == 0) {
+                            // Create new person
+                            if (mListener != null) {
+                                mListener.onEditPerson(mEventId, -1);
+                            }
+                        } else {
+                            Person chosen = available.get(which - 1);
+                            mEventDao.addPerson(mEventId, chosen.getId());
+                            loadData();
+                        }
                     }
                 })
                 .setNegativeButton(R.string.cancel, null)

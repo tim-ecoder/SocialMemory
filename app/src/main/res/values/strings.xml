@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Who\'s Who</string>
+    <string name="splash_subtitle">Remember every face</string>
 
     <!-- Events -->
     <string name="events_title">Events</string>

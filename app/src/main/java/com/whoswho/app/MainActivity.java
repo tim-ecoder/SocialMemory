@@ -8,6 +8,9 @@ import android.os.Bundle;
 
 import com.whoswho.app.ui.event.EventDetailFragment;
 import com.whoswho.app.ui.events.EventListFragment;
+import com.whoswho.app.ui.person.PersonEditFragment;
+import com.whoswho.app.ui.quiz.QuizFragment;
+import com.whoswho.app.ui.settings.SettingsFragment;
 
 public class MainActivity extends Activity
         implements EventListFragment.OnEventSelectedListener,
@@ -16,6 +19,9 @@ public class MainActivity extends Activity
     // Tag constants used when adding fragments to the back stack
     private static final String TAG_EVENT_LIST   = "event_list";
     private static final String TAG_EVENT_DETAIL = "event_detail";
+    private static final String TAG_PERSON_EDIT  = "person_edit";
+    private static final String TAG_QUIZ         = "quiz";
+    private static final String TAG_SETTINGS     = "settings";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,19 +69,26 @@ public class MainActivity extends Activity
 
     /**
      * Navigates to the person editor for the given person in the given event context.
-     * Stub – implemented by PersonEditorFragment when that module is added.
      */
     public void showPersonEdit(long eventId, long personId) {
-        // PersonEditorFragment will be wired here in a future sprint.
-        // For now, fall through silently so the app does not crash.
+        PersonEditFragment fragment = PersonEditFragment.newInstance(personId, eventId);
+        getFragmentManager().beginTransaction()
+                .replace(R.id.fragment_container, fragment, TAG_PERSON_EDIT)
+                .addToBackStack(TAG_PERSON_EDIT)
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                .commit();
     }
 
     /**
      * Navigates to the quiz screen for the given event.
-     * Stub – implemented by QuizFragment when that module is added.
      */
     public void showQuiz(long eventId) {
-        // QuizFragment will be wired here in a future sprint.
+        QuizFragment fragment = QuizFragment.newInstance(eventId);
+        getFragmentManager().beginTransaction()
+                .replace(R.id.fragment_container, fragment, TAG_QUIZ)
+                .addToBackStack(TAG_QUIZ)
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                .commit();
     }
 
     // -------------------------------------------------------------------------
@@ -93,12 +106,31 @@ public class MainActivity extends Activity
 
     @Override
     public void onAddPersonToEvent(long eventId) {
-        // Person picker / editor flow – handled inside EventDetailFragment for now.
+        showPersonEdit(eventId, -1);
     }
 
     @Override
     public void onStartQuiz(long eventId) {
         showQuiz(eventId);
+    }
+
+    @Override
+    public void onEditPerson(long eventId, long personId) {
+        showPersonEdit(eventId, personId);
+    }
+
+    // -------------------------------------------------------------------------
+    // EventListFragment.OnEventSelectedListener
+    // -------------------------------------------------------------------------
+
+    @Override
+    public void onOpenSettings() {
+        SettingsFragment fragment = SettingsFragment.newInstance();
+        getFragmentManager().beginTransaction()
+                .replace(R.id.fragment_container, fragment, TAG_SETTINGS)
+                .addToBackStack(TAG_SETTINGS)
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                .commit();
     }
 
     // -------------------------------------------------------------------------
