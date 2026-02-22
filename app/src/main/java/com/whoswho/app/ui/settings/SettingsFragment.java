@@ -1,10 +1,13 @@
 package com.whoswho.app.ui.settings;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.LayoutInflater;
@@ -25,6 +28,9 @@ import java.util.List;
  * Settings screen with Export/Import functionality.
  */
 public class SettingsFragment extends Fragment {
+
+    private static final int REQUEST_PERM_EXPORT = 3001;
+    private static final int REQUEST_PERM_IMPORT = 3002;
 
     // -------------------------------------------------------------------------
     // Factory
@@ -54,16 +60,49 @@ public class SettingsFragment extends Fragment {
         btnExport.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                confirmExport();
+                requestStorageThen(REQUEST_PERM_EXPORT);
             }
         });
 
         btnImport.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                confirmImport();
+                requestStorageThen(REQUEST_PERM_IMPORT);
             }
         });
+    }
+
+    private void requestStorageThen(int requestCode) {
+        if (Build.VERSION.SDK_INT >= 23) {
+            if (getActivity().checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(
+                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                                     Manifest.permission.READ_EXTERNAL_STORAGE},
+                        requestCode);
+                return;
+            }
+        }
+        if (requestCode == REQUEST_PERM_EXPORT) {
+            confirmExport();
+        } else {
+            confirmImport();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                                           int[] grantResults) {
+        if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            if (requestCode == REQUEST_PERM_EXPORT) {
+                confirmExport();
+            } else if (requestCode == REQUEST_PERM_IMPORT) {
+                confirmImport();
+            }
+        } else {
+            Toast.makeText(getActivity(), "Storage permission denied",
+                    Toast.LENGTH_SHORT).show();
+        }
     }
 
     // -------------------------------------------------------------------------

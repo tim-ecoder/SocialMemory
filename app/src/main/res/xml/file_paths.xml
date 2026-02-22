@@ -2,4 +2,6 @@
 <paths>
     <files-path name="photos" path="photos/" />
     <cache-path name="cache" path="." />
+    <external-files-path name="external_pictures" path="Pictures/" />
+    <external-files-path name="external_root" path="." />
 </paths>

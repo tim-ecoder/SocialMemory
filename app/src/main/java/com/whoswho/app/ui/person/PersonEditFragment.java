@@ -1,12 +1,15 @@
 package com.whoswho.app.ui.person;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.TextUtils;
@@ -34,6 +37,8 @@ public class PersonEditFragment extends Fragment {
 
     private static final int REQUEST_CAMERA  = 1001;
     private static final int REQUEST_GALLERY = 1002;
+    private static final int REQUEST_PERM_CAMERA  = 2001;
+    private static final int REQUEST_PERM_GALLERY = 2002;
 
     private static final int PHOTO_MAX_SIZE = 800;
 
@@ -190,6 +195,18 @@ public class PersonEditFragment extends Fragment {
     }
 
     private void launchCamera() {
+        if (Build.VERSION.SDK_INT >= 23) {
+            if (getActivity().checkSelfPermission(Manifest.permission.CAMERA)
+                    != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(new String[]{Manifest.permission.CAMERA},
+                        REQUEST_PERM_CAMERA);
+                return;
+            }
+        }
+        doLaunchCamera();
+    }
+
+    private void doLaunchCamera() {
         Intent intent = PhotoHelper.createCameraIntent(getActivity());
         if (intent != null) {
             startActivityForResult(intent, REQUEST_CAMERA);
@@ -199,8 +216,34 @@ public class PersonEditFragment extends Fragment {
     }
 
     private void launchGallery() {
+        if (Build.VERSION.SDK_INT >= 23) {
+            if (getActivity().checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
+                    != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                        REQUEST_PERM_GALLERY);
+                return;
+            }
+        }
+        doLaunchGallery();
+    }
+
+    private void doLaunchGallery() {
         Intent intent = PhotoHelper.createGalleryIntent();
         startActivityForResult(intent, REQUEST_GALLERY);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                                           int[] grantResults) {
+        if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            if (requestCode == REQUEST_PERM_CAMERA) {
+                doLaunchCamera();
+            } else if (requestCode == REQUEST_PERM_GALLERY) {
+                doLaunchGallery();
+            }
+        } else {
+            Toast.makeText(getActivity(), "Permission denied", Toast.LENGTH_SHORT).show();
+        }
     }
 
     // -------------------------------------------------------------------

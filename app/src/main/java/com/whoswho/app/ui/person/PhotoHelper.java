@@ -6,8 +6,11 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
+
+import androidx.core.content.FileProvider;
 
 import java.io.File;
 import java.io.IOException;
@@ -50,11 +53,19 @@ public final class PhotoHelper {
             return null;
         }
 
-        Uri outputUri = Uri.fromFile(photoFile);
-        sCameraOutputUri = outputUri;
+        Uri outputUri;
+        if (Build.VERSION.SDK_INT >= 24) {
+            outputUri = FileProvider.getUriForFile(ctx,
+                    ctx.getPackageName() + ".fileprovider", photoFile);
+        } else {
+            outputUri = Uri.fromFile(photoFile);
+        }
+        // Keep file URI for reading back the photo in onActivityResult
+        sCameraOutputUri = Uri.fromFile(photoFile);
 
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         intent.putExtra(MediaStore.EXTRA_OUTPUT, outputUri);
+        intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
         return intent;
     }
 
