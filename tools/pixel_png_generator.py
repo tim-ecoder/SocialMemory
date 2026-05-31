@@ -22,12 +22,19 @@ ROWS = HEIGHT // BLOCK  # 120
 # Dark blue base (18, 38, 96), with green +20% then the whole color lightened 20%.
 BLUE = (22, 55, 115)    # fixed dark blue
 BROWN = (74, 44, 22)    # a dark brown
-COLORS = (BLUE, BROWN)
+
+# Brown appears 1.5x as often as blue (ratio 1.5 : 1 -> P(brown) = 0.6).
+BROWN_RATIO = 1.5
+P_BROWN = BROWN_RATIO / (BROWN_RATIO + 1.0)
 
 
 def make_pixel_grid(rng):
-    """Return a ROWS x COLS grid, each cell an (r, g, b) tuple."""
-    return [[COLORS[rng.randrange(2)] for _ in range(COLS)] for _ in range(ROWS)]
+    """Return a ROWS x COLS grid, each cell an (r, g, b) tuple.
+
+    Brown blocks occur ~1.5x as often as blue blocks (P_BROWN).
+    """
+    return [[BROWN if rng.random() < P_BROWN else BLUE
+             for _ in range(COLS)] for _ in range(ROWS)]
 
 
 def grid_to_rgb_rows(grid):

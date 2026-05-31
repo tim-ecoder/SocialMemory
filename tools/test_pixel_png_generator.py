@@ -85,6 +85,26 @@ def test_basic_properties():
         print("test_basic_properties: OK")
 
 
+def test_brown_blue_ratio():
+    # Count blocks across several seeds; brown should be ~1.5x blue.
+    blue = brown = 0
+    for seed in range(8):
+        with tempfile.TemporaryDirectory() as d:
+            path = os.path.join(d, "out.png")
+            gen.generate(path, seed=seed)
+            _, _, px = decode_png(path)
+            for br in range(gen.ROWS):
+                for bc in range(gen.COLS):
+                    c = px[br * gen.BLOCK][bc * gen.BLOCK]
+                    if c == gen.BROWN:
+                        brown += 1
+                    else:
+                        blue += 1
+    ratio = brown / blue
+    assert 1.35 <= ratio <= 1.65, f"brown:blue ratio {ratio:.3f} not ~1.5"
+    print(f"test_brown_blue_ratio: OK (ratio={ratio:.3f})")
+
+
 def test_determinism():
     with tempfile.TemporaryDirectory() as d:
         a = os.path.join(d, "a.png")
@@ -109,6 +129,7 @@ def test_randomness_differs():
 
 if __name__ == "__main__":
     test_basic_properties()
+    test_brown_blue_ratio()
     test_determinism()
     test_randomness_differs()
     print("\nAll tests passed.")
