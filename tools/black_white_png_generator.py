@@ -24,8 +24,8 @@ ROWS = -(-HEIGHT // BLOCK)
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 
-# Black appears BLACK_RATIO x as often as white (1.0 -> equal).
-BLACK_RATIO = 1.0
+# White appears 1.3x as often as black (white:black = 1.3 -> black:white = 1/1.3).
+BLACK_RATIO = 1.0 / 1.3
 P_BLACK = BLACK_RATIO / (BLACK_RATIO + 1.0)
 
 
