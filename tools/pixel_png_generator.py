@@ -20,7 +20,7 @@ ROWS = HEIGHT // BLOCK  # 120
 
 # The two colors (R, G, B)
 # Dark blue base (18, 38, 96), with green +20% then the whole color lightened 20%.
-BLUE = (22, 55, 115)    # fixed dark blue
+BLUE = (22, 66, 115)    # fixed dark blue (greener)
 BROWN = (74, 44, 22)    # a dark brown
 
 # Brown appears 1.5x as often as blue (ratio 1.5 : 1 -> P(brown) = 0.6).
