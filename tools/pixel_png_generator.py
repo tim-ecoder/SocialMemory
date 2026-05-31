@@ -23,7 +23,7 @@ ROWS = -(-HEIGHT // BLOCK)
 # The two colors (R, G, B)
 # Dark blue base (18, 38, 96), with green +20% then the whole color lightened 20%.
 BLUE = (18, 64, 92)     # fixed dark blue, greener
-BROWN = (59, 35, 18)    # a dark brown, darkened 20%
+BROWN = (71, 35, 18)    # a dark brown, redder
 
 # Brown appears 1.5x as often as blue (ratio 1.5 : 1 -> P(brown) = 0.6).
 BROWN_RATIO = 1.5
