@@ -92,7 +92,7 @@ def test_basic_properties():
 
 
 def test_brown_blue_ratio():
-    # Count blocks across several seeds; brown should be ~1.5x blue.
+    # Count blocks across several seeds; brown should be ~BROWN_RATIO x blue.
     blue = brown = 0
     for seed in range(8):
         with tempfile.TemporaryDirectory() as d:
@@ -107,7 +107,9 @@ def test_brown_blue_ratio():
                     else:
                         blue += 1
     ratio = brown / blue
-    assert 1.35 <= ratio <= 1.65, f"brown:blue ratio {ratio:.3f} not ~1.5"
+    expected = gen.BROWN_RATIO
+    assert expected * 0.9 <= ratio <= expected * 1.1, \
+        f"brown:blue ratio {ratio:.3f} not ~{expected}"
     print(f"test_brown_blue_ratio: OK (ratio={ratio:.3f})")
 
 

@@ -25,8 +25,8 @@ ROWS = -(-HEIGHT // BLOCK)
 BLUE = (18, 64, 92)     # fixed dark blue, greener
 BROWN = (71, 35, 18)    # a dark brown, redder
 
-# Brown appears 1.5x as often as blue (ratio 1.5 : 1 -> P(brown) = 0.6).
-BROWN_RATIO = 1.5
+# Brown appears 1.8x as often as blue (ratio 1.8 : 1).
+BROWN_RATIO = 1.8
 P_BROWN = BROWN_RATIO / (BROWN_RATIO + 1.0)
 
 
