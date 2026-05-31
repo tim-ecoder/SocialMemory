@@ -19,7 +19,7 @@ COLS = WIDTH // BLOCK   # 160
 ROWS = HEIGHT // BLOCK  # 120
 
 # The two colors (R, G, B)
-BLUE = (33, 99, 205)    # a clear blue
+BLUE = (18, 38, 96)     # a dark blue (navy)
 BROWN = (120, 72, 36)   # an earthy brown
 COLORS = (BLUE, BROWN)
 
@@ -66,7 +66,10 @@ def write_png(path, raw_rgb):
 
 
 def generate(path, seed=None):
-    rng = random.Random(seed)
+    # With an explicit seed, use a reproducible PRNG. Otherwise draw from the
+    # OS entropy source (SystemRandom) for higher-quality, non-deterministic
+    # randomization that isn't tied to wall-clock-style seeding.
+    rng = random.Random(seed) if seed is not None else random.SystemRandom()
     grid = make_pixel_grid(rng)
     raw = grid_to_rgb_rows(grid)
     write_png(path, raw)
