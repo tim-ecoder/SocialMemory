@@ -1,0 +1,96 @@
+#!/usr/bin/env python3
+"""Generate 640x480 PNGs made of randomized 8x8 mono-color pixels.
+
+Each "big pixel" is an 8x8 block painted one of two colors: blue or brown.
+The choice per block is random. No third-party deps — writes PNG by hand
+using only the standard library (zlib + struct).
+"""
+
+import argparse
+import random
+import struct
+import zlib
+
+# Image geometry
+WIDTH = 640
+HEIGHT = 480
+BLOCK = 8
+COLS = WIDTH // BLOCK   # 80
+ROWS = HEIGHT // BLOCK  # 60
+
+# The two colors (R, G, B)
+BLUE = (33, 99, 205)    # a clear blue
+BROWN = (120, 72, 36)   # an earthy brown
+COLORS = (BLUE, BROWN)
+
+
+def make_pixel_grid(rng):
+    """Return a ROWS x COLS grid, each cell an (r, g, b) tuple."""
+    return [[COLORS[rng.randrange(2)] for _ in range(COLS)] for _ in range(ROWS)]
+
+
+def grid_to_rgb_rows(grid):
+    """Expand the block grid into full-resolution raw RGB scanlines.
+
+    Returns the raw image bytes laid out as PNG filtered scanlines
+    (filter type 0 prepended to each row).
+    """
+    raw = bytearray()
+    for block_row in grid:
+        # Build one full pixel row of bytes from this block row.
+        row = bytearray()
+        for (r, g, b) in block_row:
+            row += bytes((r, g, b)) * BLOCK
+        # Each block row is BLOCK scanlines tall; each scanline gets a 0 filter byte.
+        for _ in range(BLOCK):
+            raw.append(0)
+            raw += row
+    return bytes(raw)
+
+
+def _chunk(tag, data):
+    out = struct.pack(">I", len(data)) + tag + data
+    crc = zlib.crc32(tag + data) & 0xFFFFFFFF
+    return out + struct.pack(">I", crc)
+
+
+def write_png(path, raw_rgb):
+    sig = b"\x89PNG\r\n\x1a\n"
+    ihdr = struct.pack(">IIBBBBB", WIDTH, HEIGHT, 8, 2, 0, 0, 0)  # 8-bit, color type 2 (RGB)
+    idat = zlib.compress(raw_rgb, 9)
+    with open(path, "wb") as f:
+        f.write(sig)
+        f.write(_chunk(b"IHDR", ihdr))
+        f.write(_chunk(b"IDAT", idat))
+        f.write(_chunk(b"IEND", b""))
+
+
+def generate(path, seed=None):
+    rng = random.Random(seed)
+    grid = make_pixel_grid(rng)
+    raw = grid_to_rgb_rows(grid)
+    write_png(path, raw)
+    return path
+
+
+def main():
+    p = argparse.ArgumentParser(description="Generate randomized blue/brown 8x8-pixel PNGs.")
+    p.add_argument("-n", "--count", type=int, default=1, help="number of PNGs to generate")
+    p.add_argument("-o", "--output", default="pixels.png",
+                   help="output filename (or prefix when count > 1)")
+    p.add_argument("-s", "--seed", type=int, default=None, help="random seed (optional)")
+    args = p.parse_args()
+
+    if args.count == 1:
+        out = generate(args.output, args.seed)
+        print(f"wrote {out}")
+    else:
+        base = args.output[:-4] if args.output.endswith(".png") else args.output
+        for i in range(args.count):
+            seed = None if args.seed is None else args.seed + i
+            out = generate(f"{base}_{i:03d}.png", seed)
+            print(f"wrote {out}")
+
+
+if __name__ == "__main__":
+    main()
