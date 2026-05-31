@@ -24,8 +24,8 @@ ROWS = -(-HEIGHT // BLOCK)
 GOLD = (212, 175, 55)     # metallic gold
 SILVER = (192, 192, 192)  # metallic silver
 
-# Gold appears 1.3x as often as silver (ratio 1.3 : 1).
-GOLD_RATIO = 1.3
+# Gold appears 0.8x as often as silver (ratio 0.8 : 1 -> gold is rarer).
+GOLD_RATIO = 0.8
 P_GOLD = GOLD_RATIO / (GOLD_RATIO + 1.0)
 
 
