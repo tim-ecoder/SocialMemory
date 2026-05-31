@@ -14,9 +14,11 @@ import zlib
 # Image geometry
 WIDTH = 640
 HEIGHT = 480
-BLOCK = 4
-COLS = WIDTH // BLOCK   # 160
-ROWS = HEIGHT // BLOCK  # 120
+BLOCK = 3
+# Round up so the blocks cover the full image; edge blocks may be clipped
+# when WIDTH/HEIGHT are not exact multiples of BLOCK.
+COLS = -(-WIDTH // BLOCK)
+ROWS = -(-HEIGHT // BLOCK)
 
 # The two colors (R, G, B)
 # Dark blue base (18, 38, 96), with green +20% then the whole color lightened 20%.
@@ -41,18 +43,26 @@ def grid_to_rgb_rows(grid):
     """Expand the block grid into full-resolution raw RGB scanlines.
 
     Returns the raw image bytes laid out as PNG filtered scanlines
-    (filter type 0 prepended to each row).
+    (filter type 0 prepended to each row). Edge blocks are clipped so the
+    output is exactly WIDTH x HEIGHT even when dimensions aren't multiples
+    of BLOCK.
     """
+    stride = WIDTH * 3
     raw = bytearray()
+    y = 0
     for block_row in grid:
-        # Build one full pixel row of bytes from this block row.
+        # Build one full pixel row of bytes, then clip to exactly WIDTH pixels.
         row = bytearray()
         for (r, g, b) in block_row:
             row += bytes((r, g, b)) * BLOCK
-        # Each block row is BLOCK scanlines tall; each scanline gets a 0 filter byte.
+        row = row[:stride]
+        # Each block row is up to BLOCK scanlines tall; stop at HEIGHT.
         for _ in range(BLOCK):
-            raw.append(0)
+            if y >= HEIGHT:
+                break
+            raw.append(0)  # filter type 0 (none)
             raw += row
+            y += 1
     return bytes(raw)
 
 

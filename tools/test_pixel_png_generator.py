@@ -69,13 +69,19 @@ def test_basic_properties():
 
         seen = set()
         # Check every block is mono-color and only the two colors appear.
+        # Edge blocks may be clipped, so bound indices to the image size.
         for br in range(gen.ROWS):
             for bc in range(gen.COLS):
                 colors_in_block = set()
                 for dy in range(gen.BLOCK):
+                    yy = br * gen.BLOCK + dy
+                    if yy >= h:
+                        break
                     for dx in range(gen.BLOCK):
-                        c = px[br * gen.BLOCK + dy][bc * gen.BLOCK + dx]
-                        colors_in_block.add(c)
+                        xx = bc * gen.BLOCK + dx
+                        if xx >= w:
+                            break
+                        colors_in_block.add(px[yy][xx])
                 assert len(colors_in_block) == 1, f"block {(br, bc)} not mono: {colors_in_block}"
                 color = colors_in_block.pop()
                 assert color in (gen.BLUE, gen.BROWN), f"unexpected color {color}"
