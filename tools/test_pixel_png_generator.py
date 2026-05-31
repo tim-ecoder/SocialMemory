@@ -67,13 +67,8 @@ def test_basic_properties():
 
         assert (w, h) == (gen.WIDTH, gen.HEIGHT), f"wrong dims {(w, h)}"
 
-        # Allowed green range for blue blocks given the +/- jitter.
-        g_lo = gen._clamp8(gen.BLUE[1] * (1.0 - gen.GREEN_JITTER))
-        g_hi = gen._clamp8(gen.BLUE[1] * (1.0 + gen.GREEN_JITTER))
-
-        saw_blue = saw_brown = False
-        green_values = set()
-        # Check every block is mono-color and is a valid brown or blue variant.
+        seen = set()
+        # Check every block is mono-color and only the two colors appear.
         for br in range(gen.ROWS):
             for bc in range(gen.COLS):
                 colors_in_block = set()
@@ -82,18 +77,11 @@ def test_basic_properties():
                         c = px[br * gen.BLOCK + dy][bc * gen.BLOCK + dx]
                         colors_in_block.add(c)
                 assert len(colors_in_block) == 1, f"block {(br, bc)} not mono: {colors_in_block}"
-                r, g, b = colors_in_block.pop()
-                if (r, g, b) == gen.BROWN:
-                    saw_brown = True
-                else:
-                    # A blue variant: red/blue fixed, green within jitter range.
-                    assert (r, b) == (gen.BLUE[0], gen.BLUE[2]), f"unexpected color {(r, g, b)}"
-                    assert g_lo <= g <= g_hi, f"green {g} outside [{g_lo}, {g_hi}]"
-                    saw_blue = True
-                    green_values.add(g)
+                color = colors_in_block.pop()
+                assert color in (gen.BLUE, gen.BROWN), f"unexpected color {color}"
+                seen.add(color)
 
-        assert saw_blue and saw_brown, "both blue and brown should appear"
-        assert len(green_values) > 1, "blue green channel should actually vary"
+        assert seen == {gen.BLUE, gen.BROWN}, f"both colors should appear, got {seen}"
         print("test_basic_properties: OK")
 
 

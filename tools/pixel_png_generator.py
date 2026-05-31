@@ -19,29 +19,15 @@ COLS = WIDTH // BLOCK   # 160
 ROWS = HEIGHT // BLOCK  # 120
 
 # The two colors (R, G, B)
-BLUE = (18, 38, 96)     # a dark blue (navy); green channel is jittered per block
+# Dark blue base (18, 38, 96), with green +20% then the whole color lightened 20%.
+BLUE = (22, 55, 115)    # fixed dark blue
 BROWN = (74, 44, 22)    # a dark brown
-GREEN_JITTER = 0.20     # blue's green channel varies +/- 20% per block
-
-
-def _clamp8(v):
-    return max(0, min(255, int(round(v))))
-
-
-def blue_variant(rng):
-    """Dark blue with its green channel jittered by +/- GREEN_JITTER."""
-    factor = 1.0 + rng.uniform(-GREEN_JITTER, GREEN_JITTER)
-    return (BLUE[0], _clamp8(BLUE[1] * factor), BLUE[2])
+COLORS = (BLUE, BROWN)
 
 
 def make_pixel_grid(rng):
-    """Return a ROWS x COLS grid, each cell an (r, g, b) tuple.
-
-    Each block is either dark brown, or a dark blue whose green channel is
-    randomly jittered by +/- GREEN_JITTER.
-    """
-    return [[BROWN if rng.randrange(2) else blue_variant(rng)
-             for _ in range(COLS)] for _ in range(ROWS)]
+    """Return a ROWS x COLS grid, each cell an (r, g, b) tuple."""
+    return [[COLORS[rng.randrange(2)] for _ in range(COLS)] for _ in range(ROWS)]
 
 
 def grid_to_rgb_rows(grid):
