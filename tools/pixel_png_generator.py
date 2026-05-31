@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Generate 640x480 PNGs made of randomized 8x8 mono-color pixels.
+"""Generate 640x480 PNGs made of randomized 4x4 mono-color pixels.
 
-Each "big pixel" is an 8x8 block painted one of two colors: blue or brown.
+Each "big pixel" is a 4x4 block painted one of two colors: blue or brown.
 The choice per block is random. No third-party deps — writes PNG by hand
 using only the standard library (zlib + struct).
 """
@@ -14,9 +14,9 @@ import zlib
 # Image geometry
 WIDTH = 640
 HEIGHT = 480
-BLOCK = 8
-COLS = WIDTH // BLOCK   # 80
-ROWS = HEIGHT // BLOCK  # 60
+BLOCK = 4
+COLS = WIDTH // BLOCK   # 160
+ROWS = HEIGHT // BLOCK  # 120
 
 # The two colors (R, G, B)
 BLUE = (33, 99, 205)    # a clear blue
